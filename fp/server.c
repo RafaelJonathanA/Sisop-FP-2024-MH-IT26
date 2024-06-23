@@ -20,7 +20,7 @@
 #define BASE_DIR "/home/ubuntu/FP/DiscorIT"
 #define CHANNELS_FILE "/home/ubuntu/FP/DiscorIT/channels.csv"
 #define LOG_FILE "/home/ubuntu/FP/DiscorIT/users.log"
-#define AUTH_FILE "auth.csv"
+#define AUTH_FILE "/home/ubuntu/FP/DiscorIT/auth.csv"
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 int clients[MAX_CLIENTS];
@@ -151,7 +151,8 @@ void register_user(int client_socket, char *username, char *password) {
 
     while (fscanf(fp, "%d,%49[^,],%99[^,],%9[^\n]\n", &user.id_user, user.name, user.password, user.global_role) != EOF) {
         if (strcmp(user.name, username) == 0) {
-            write(client_socket, "ERROR: Username already exists\n", 31);
+            snprintf(buffer, BUFFER_SIZE, "%s sudah terdaftar\n", username);
+            write(client_socket, buffer, strlen(buffer));
             fclose(fp);
             return;
         }
@@ -167,6 +168,7 @@ void register_user(int client_socket, char *username, char *password) {
 
     fclose(fp);
 }
+
 
 void login_user(int client_socket, char *username, char *password) {
     FILE *fp;
