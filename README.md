@@ -1942,7 +1942,7 @@ int main(int argc, char *argv[]) {
 #include <pthread.h>
 #include <time.h>
 
-#define PORT 8080
+#define PORT 12345
 #define BUF_SIZE 1024
 
 int client_fd;
