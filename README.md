@@ -1709,10 +1709,15 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 #### DOKUMENTASI 
 
 Start SERVER
+
 ![Start Server](https://github.com/RafaelJonathanA/Sisop/assets/150375098/1a40def5-9e46-44a4-adce-399a1d339c7a)
+
 Tampilan saat REGISTER dan LOGIN 
+
 ![Login ](https://github.com/RafaelJonathanA/Sisop/assets/150375098/235ba8ff-ad1c-4526-8605-047721538f5a)
+
 Tampilan untuk EDIT CHANNEL dan LIST CHANNEL 
+
 ![EDIT channel](https://github.com/RafaelJonathanA/Sisop/assets/150375098/f81938a0-8cad-43e9-beb7-b560d088ea52)
 
 
