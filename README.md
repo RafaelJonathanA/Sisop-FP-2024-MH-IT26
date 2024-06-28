@@ -2200,7 +2200,18 @@ int main(int argc, char *argv[]) {
 }
 
 ```
-#### Penjelasan Singkat Kode (Revisi)
+#### Penjelasan Singkat (Revisi)
+discorit.c 
+
+Pada revisi discorit pertama yang diubah adalah discorit.c yang tadinya belum bisa menampilkan [username/channel/room] sehingga bisa menampilkannya dan juga memberikan fungsi untuk EXIT tidak langsung keluar dari program namun mulai dari room, channel, baru keluar dari program  
+
+server.c 
+
+Pada revisi server.c cukup banyak yang diubah mulai dari cara join channelnya, edit profile, lalu cukup banyak juga fungsi yang ditambahkan seperti ban, unban, chat, see chat, remove user, dan untuk yang sebelumnya tidak bisa seperti list room, dan list users hal ini berkaitan dengan tidak bisanya join channel meskipun cara list itu sama 
+
+monitor.c 
+
+Pada revisi monitor.c kami sudah mengupayakan agar monnitor bisa masuk ke akun user dan bisa melihat chat secara realtime namun ternyata monitor masih tidak bisa login user 
 
 
 #### Hasil revisi 
