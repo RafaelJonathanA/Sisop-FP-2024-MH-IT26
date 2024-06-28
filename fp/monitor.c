@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 
-#define PORT 8080
+#define PORT 12345
 #define BUFFER_SIZE 1024
 
 void connect_to_server() {
