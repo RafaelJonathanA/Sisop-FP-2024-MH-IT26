@@ -1327,35 +1327,36 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 ```c
 
 ```
+#### Penjelasan Singkat Kode (Revisi)
 
 #### Hasil revisi 
-Hasil dari REGISTER, LOGIN, CREATE CHANNEL, JOIN, CREATE ROOM. 
+- Hasil dari REGISTER, LOGIN, CREATE CHANNEL, JOIN, CREATE ROOM. 
 ![CREATE CHANNEL dan ROOM](https://github.com/RafaelJonathanA/Sisop/assets/150375098/4d6c0f7e-324f-4d23-aa61-7e119bc5ce07)
 
-Hasil dari LIST CHANNEL, LIST USER 
+- Hasil dari LIST CHANNEL, LIST USER 
 ![LIST CHANNEL dan ROOM](https://github.com/RafaelJonathanA/Sisop/assets/150375098/010d537f-0712-48ca-88a3-19ee2640f63f)
 
-Hasil dari CHAT, SEE CHAT, EDIT CHAT 
+- Hasil dari CHAT, SEE CHAT, EDIT CHAT 
 ![chat rafa](https://github.com/RafaelJonathanA/Sisop/assets/150375098/d3472912-2700-4369-b1c8-eea72fd55249)
 
-Hasil dari CHAT, SEE CHAT, DEL CHAT, EDIT CHAT 
+- Hasil dari CHAT, SEE CHAT, DEL CHAT, EDIT CHAT 
 ![chat fidel](https://github.com/RafaelJonathanA/Sisop/assets/150375098/723335ac-0c13-43f3-b6ff-60a990ac00c4)
 
-Hasil EDIT CHANNEL dan DEL CHANNEL 
+- Hasil EDIT CHANNEL dan DEL CHANNEL 
 ![EDIT CHANNEL dan DEL CHANNEL](https://github.com/RafaelJonathanA/Sisop/assets/150375098/f8671699-bd06-4887-8ad9-b5014531c738)
 
-Hasil EDIT user (ROOT) dan REMOVE 
+- Hasil EDIT user (ROOT) dan REMOVE 
 ![Kuasa ROOT](https://github.com/RafaelJonathanA/Sisop/assets/150375098/dbf384f0-a08c-4597-a38c-3435430315c4)
 ![Bukti Kuasa Root](https://github.com/RafaelJonathanA/Sisop/assets/150375098/918c46c6-abd7-4ce8-ac75-81aa70796e6f)
 
-Hasil dari BAN, UNBAN
+- Hasil dari BAN, UNBAN
 ![Ban dan UNBAN](https://github.com/RafaelJonathanA/Sisop/assets/150375098/1cfaa5aa-002a-45ea-bf12-ae61433c59af)
 ![Bukti ke ban ](https://github.com/RafaelJonathanA/Sisop/assets/150375098/6b1c378a-7538-453a-9a11-5e7780dcd562)
 
-Hasil EDIT profile diri sendiri 
+- Hasil EDIT profile diri sendiri 
 ![Bukti update diri sendiri](https://github.com/RafaelJonathanA/Sisop/assets/150375098/4e8c76f0-e920-419c-ab71-fdb6d175a949)
 
-Hasil EXIT 
+- Hasil EXIT 
 ![EXIT](https://github.com/RafaelJonathanA/Sisop/assets/150375098/dba59328-194e-4980-9ef0-0fea38f29913)
 
 ##### Fungsi yang berhasil setelah revisi 
