@@ -1330,6 +1330,7 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 #### Penjelasan Singkat Kode (Revisi)
 
 #### Hasil revisi 
+
 - Hasil dari REGISTER, LOGIN, CREATE CHANNEL, JOIN, CREATE ROOM. 
 ![CREATE CHANNEL dan ROOM](https://github.com/RafaelJonathanA/Sisop/assets/150375098/4d6c0f7e-324f-4d23-aa61-7e119bc5ce07)
 
