@@ -1732,7 +1732,200 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 ## Pekerjaan (Revisi)
 ### discorit.c 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 
+#define PORT 12345
+#define MAX_BUFFER 1024
+
+int Conect;
+
+
+void initiate_connection() {
+    struct sockaddr_in server_addr;
+
+    // Membuat socket
+    if ((Conect = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("Gagal membuat socket");
+        exit(EXIT_FAILURE);
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+
+    if (inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr) <= 0) {
+        perror("Alamat tidak valid atau tidak didukung");
+        exit(EXIT_FAILURE);
+    }
+
+    // Menghubungkan ke server
+    if (connect(Conect, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Koneksi gagal");
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Fungsi untuk menjalankan perintah dari pengguna
+void execute_command(const char *cmd, char *user, char *chan, char *rm) {
+    if (!cmd || cmd[0] == '\0') {
+        printf("Perintah tidak boleh kosong\n");
+        return;
+    }
+
+    // Mengirim perintah ke server
+    if (send(Conect, cmd, strlen(cmd), 0) < 0) {
+        perror("Gagal mengirim perintah ke server");
+    }
+
+    char server_reply[MAX_BUFFER];
+    memset(server_reply, 0, sizeof(server_reply));
+
+    // Menerima respons dari server
+    if (recv(Conect, server_reply, MAX_BUFFER - 1, 0) < 0) {
+        perror("Gagal menerima respons dari server");
+    } else {
+        if (strstr(server_reply, "Key:") != NULL) {
+            char key_input[50];
+            printf("Key: ");
+            fgets(key_input, sizeof(key_input), stdin);
+            key_input[strcspn(key_input, "\n")] = '\0'; // Menghapus karakter newline
+
+            if (send(Conect, key_input, strlen(key_input), 0) < 0) {
+                perror("Gagal mengirim key ke server");
+            }
+
+            // Menerima respons setelah mengirimkan key
+            memset(server_reply, 0, sizeof(server_reply));
+            if (recv(Conect, server_reply, MAX_BUFFER - 1, 0) < 0) {
+                perror("Gagal menerima respons dari server");
+            } else {
+                if (strstr(server_reply, "Invalid key") != NULL) {
+                    // Reset state jika key tidak valid
+                    if (strlen(rm) > 0) {
+                        rm[0] = '\0';
+                    } else if (strlen(chan) > 0) {
+                        chan[0] = '\0';
+                    }
+                }
+            }
+        } else if (strstr(server_reply, "not found") != NULL || strstr(server_reply, "Invalid key") != NULL || strstr(server_reply, "You have been banned") != NULL) {
+            if (strlen(rm) > 0) {
+                rm[0] = '\0';
+            } else if (strlen(chan) > 0) {
+                chan[0] = '\0';
+            }
+            printf("%s\n", server_reply);
+        } else if (strstr(server_reply, "You have exited the application") != NULL) {
+            close(Conect);
+            exit(0);  // Keluar dari program klien setelah menerima konfirmasi keluar
+        } else {
+            printf("%s\n", server_reply);
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("Penggunaan: %s REGISTER/LOGIN username -p password\n", argv[0]);
+        return 1;
+    }
+
+    initiate_connection();
+
+    char cmd[MAX_BUFFER];
+    memset(cmd, 0, sizeof(cmd));
+
+    char user[50];
+    char chan[50] = "";
+    char rm[50] = "";
+
+    if (strcmp(argv[1], "REGISTER") == 0) {
+        if (argc < 5 || strcmp(argv[3], "-p") != 0) {
+            printf("Penggunaan: %s REGISTER username -p password\n", argv[0]);
+            return 1;
+        }
+
+        snprintf(user, sizeof(user), "%s", argv[2]);
+        char *pwd = argv[4];
+
+        snprintf(cmd, sizeof(cmd), "REGISTER %s %s", user, pwd);
+    } else if (strcmp(argv[1], "LOGIN") == 0) {
+        if (argc < 5 || strcmp(argv[3], "-p") != 0) {
+            printf("Penggunaan: %s LOGIN username -p password\n", argv[0]);
+            return 1;
+        }
+
+        snprintf(user, sizeof(user), "%s", argv[2]);
+        char *pwd = argv[4];
+
+        snprintf(cmd, sizeof(cmd), "LOGIN %s %s", user, pwd);
+
+        if (send(Conect, cmd, strlen(cmd), 0) < 0) {
+            perror("Gagal mengirim perintah ke server");
+        }
+
+        char server_reply[MAX_BUFFER];
+        memset(server_reply, 0, sizeof(server_reply));
+
+        if (recv(Conect, server_reply, MAX_BUFFER - 1, 0) < 0) {
+            perror("Gagal menerima respons dari server");
+        } else {
+            printf("%s\n", server_reply);
+
+            if (strstr(server_reply, "successfully logged in") != NULL) {
+                while (1) {
+                    if (strlen(rm) > 0) {
+                        printf("[%s/%s/%s] ", user, chan, rm);
+                    } else if (strlen(chan) > 0) {
+                        printf("[%s/%s] ", user, chan);
+                    } else {
+                        printf("[%s] ", user);
+                    }
+
+                    if (fgets(cmd, MAX_BUFFER, stdin) == NULL) {
+                        printf("Gagal membaca perintah\n");
+                        continue;
+                    }
+                    cmd[strcspn(cmd, "\n")] = '\0';
+
+                    // Simpan nama channel atau room sebelum mengirim perintah
+                    // Simpan nama pengguna baru ketika diedit
+                    if (strncmp(cmd, "JOIN ", 5) == 0) {
+                        if (strlen(chan) == 0) {
+                            snprintf(chan, sizeof(chan), "%s", cmd + 5);
+                        } else {
+                            snprintf(rm, sizeof(rm), "%s", cmd + 5);
+                        }
+                    } else if (strcmp(cmd, "EXIT") == 0) {
+                        if (strlen(rm) > 0) {
+                            rm[0] = '\0';
+                        } else if (strlen(chan) > 0) {
+                            chan[0] = '\0';
+                        }
+                    } else if (strncmp(cmd, "EDIT PROFILE SELF -u ", 21) == 0) {
+                        snprintf(user, sizeof(user), "%s", cmd + 21);
+                    }
+
+                    execute_command(cmd, user, chan, rm);
+                }
+            }
+        }
+
+        close(Conect);
+        return 0;
+    } else {
+        printf("Perintah tidak valid\n");
+        return 1;
+    }
+
+    execute_command(cmd, user, chan, rm);
+
+    close(Conect);
+    return 0;
+}
 ```
 ### server.c 
 ```c
@@ -1740,6 +1933,271 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 ```
 ### monitor.c 
 ```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/stat.h>
+#include <pthread.h>
+#include <time.h>
+
+#define PORT 8080
+#define BUF_SIZE 1024
+
+int client_fd;
+bool active = true;
+char user[50];
+char current_channel[50] = "";
+char current_room[50] = "";
+
+// Fungsi untuk menghubungkan ke server
+void connect_to_server() {
+    struct sockaddr_in server_addr;
+
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("Error creating socket");
+        exit(EXIT_FAILURE);
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+
+    if (inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr) <= 0) {
+        perror("Invalid address or unsupported address");
+        exit(EXIT_FAILURE);
+    }
+
+    if (connect(client_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Connection failed");
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Fungsi untuk mengirim perintah ke server dan menangani respons
+void send_command(const char *cmd) {
+    if (cmd == NULL) {
+        printf("Command cannot be empty\n");
+        return;
+    }
+
+    if (send(client_fd, cmd, strlen(cmd), 0) < 0) {
+        perror("Failed to send command to server");
+    }
+
+    char response[BUF_SIZE];
+    memset(response, 0, sizeof(response));
+
+    if (recv(client_fd, response, BUF_SIZE - 1, 0) < 0) {
+        perror("Failed to receive response from server");
+    } else {
+        if (strstr(response, "Key:") != NULL) {
+            char key[50];
+            printf("Key: ");
+            fgets(key, sizeof(key), stdin);
+            key[strcspn(key, "\n")] = '\0';
+
+            if (send(client_fd, key, strlen(key), 0) < 0) {
+                perror("Failed to send key to server");
+            }
+
+            memset(response, 0, sizeof(response));
+            if (recv(client_fd, response, BUF_SIZE - 1, 0) < 0) {
+                perror("Failed to receive response from server");
+            } else {
+                if (strstr(response, "Invalid key") != NULL) {
+                    if (strlen(current_room) > 0) {
+                        current_room[0] = '\0';
+                    } else if (strlen(current_channel) > 0) {
+                        current_channel[0] = '\0';
+                    }
+                }
+            }
+        } else if (strstr(response, "not found") != NULL || strstr(response, "Invalid key") != NULL || strstr(response, "You have been banned") != NULL || strstr(response, "unknown") != NULL) {
+            if (strlen(current_room) > 0) {
+                current_room[0] = '\0';
+            } else if (strlen(current_channel) > 0) {
+                current_channel[0] = '\0';
+            }
+            printf("%s\n", response);
+        } else if (strstr(response, "You have exited the application") != NULL) {
+            close(client_fd);
+            exit(0);
+        } else {
+            printf("%s\n", response);
+        }
+    }
+}
+
+// Fungsi untuk menampilkan riwayat chat dari file CSV
+void show_chat_history(const char *path) {
+    FILE *file = fopen(path, "r");
+    if (!file) {
+        perror("Failed to open file");
+        return;
+    }
+
+    char line[BUF_SIZE];
+    char output[BUF_SIZE];
+    memset(output, 0, sizeof(output));
+    bool has_chat = false;
+
+    while (fgets(line, sizeof(line), file)) {
+        has_chat = true;
+        char *date = strtok(line, "|");
+        char *chat_id = strtok(NULL, "|");
+        char *sender = strtok(NULL, "|");
+        char *message = strtok(NULL, "|");
+
+        if (date && chat_id && sender && message) {
+            snprintf(output + strlen(output), sizeof(output) - strlen(output), "[%s][%s][%s] \"%s\"\n", date, chat_id, sender, message);
+        }
+    }
+
+    fclose(file);
+
+    if (!has_chat) {
+        snprintf(output, sizeof(output), "No chat history available\n");
+    }
+
+    printf("\033[H\033[J");
+    printf("%s", output);
+    printf("[%s/%s/%s] ", user, current_channel, current_room);
+    fflush(stdout);
+}
+
+// Fungsi untuk memonitor perubahan pada file CSV
+void *monitor_csv(void *arg) {
+    char path[256];
+    snprintf(path, sizeof(path), "/home/ubuntu/FP/DiscorIT/%s/%s/chat.csv", current_channel, current_room);
+    struct stat file_stat;
+    time_t last_mod_time = 0;
+
+    while (active) {
+        if (stat(path, &file_stat) == 0) {
+            if (file_stat.st_mtime != last_mod_time) {
+                last_mod_time = file_stat.st_mtime;
+                printf("\033[H\033[J");
+                show_chat_history(path);
+            }
+        } else {
+            perror("Failed to get file status");
+        }
+        sleep(1);
+    }
+    return NULL;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc <= 3) {
+        printf("Usage: %s LOGIN username -p password\n", argv[0]);
+        return 1;
+    }
+
+    connect_to_server();
+
+    char cmd[BUF_SIZE];
+    memset(cmd, 0, sizeof(cmd));
+
+    if (strcmp(argv[1], "LOGIN") == 0) {
+        if (argc < 5 || strcmp(argv[3], "-p") != 0) {
+            printf("Usage: %s LOGIN username -p password\n", argv[0]);
+            return 1;
+        }
+
+        snprintf(user, sizeof(user), "%s", argv[2]);
+        char *password = argv[4];
+
+        snprintf(cmd, sizeof(cmd), "LOGIN %s %s", user, password);
+
+        if (send(client_fd, cmd, strlen(cmd), 0) < 0) {
+            perror("Failed to send command to server");
+        }
+
+        char response[BUF_SIZE];
+        memset(response, 0, sizeof(response));
+
+        if (recv(client_fd, response, BUF_SIZE - 1, 0) < 0) {
+            perror("Failed to receive response from server");
+        } else {
+            printf("%s\n", response);
+
+            if (strstr(response, "successfully logged in") != NULL) {
+                while (1) {
+                    printf("[%s] ", user);
+
+                    if (fgets(cmd, BUF_SIZE, stdin) == NULL) {
+                        printf("Failed to read command\n");
+                        continue;
+                    }
+                    cmd[strcspn(cmd, "\n")] = '\0';
+
+                    char *token = strtok(cmd, " ");
+                    if (token == NULL) {
+                        printf("Usage: -channel <channel_name> -room <room_name>\n");
+                        continue;
+                    }
+
+                    if (strcmp(token, "-channel") == 0) {
+                        token = strtok(NULL, " ");
+                        if (token == NULL) {
+                            printf("Usage: -channel <channel_name> -room <room_name>\n");
+                            continue;
+                        }
+                        snprintf(current_channel, sizeof(current_channel), "%s", token);
+                        token = strtok(NULL, " ");
+                        if(token == NULL){
+                            printf("Usage: -channel <channel_name> -room <room_name>\n");
+                            continue;
+                        }
+                        if(strcmp(token, "-room") != 0){
+                            printf("Usage: -channel <channel_name> -room <room_name>\n");
+                            continue;
+                        }
+                        token = strtok(NULL, " ");
+                        if(token == NULL){
+                            printf("Usage: -channel <channel_name> -room <room_name>\n");
+                            continue;
+                        }
+                        snprintf(current_room, sizeof(current_room), "%s", token);
+
+                        pthread_t csv_thread;
+                        active = true;
+                        if (pthread_create(&csv_thread, NULL, monitor_csv, NULL) != 0) {
+                            perror("Failed to create thread to monitor CSV");
+                            continue;
+                        }
+
+                        pthread_detach(csv_thread);
+
+                        char path[256];
+                        snprintf(path, sizeof(path), "/home/ubuntu/FP/DiscorIT/%s/%s/chat.csv", current_channel, current_room);
+                        show_chat_history(path);
+                    } else if (strcmp(token, "EXIT") == 0) {
+                        if (strlen(current_room) > 0 || strlen(current_channel) > 0) {
+                            current_room[0] = '\0';
+                            current_channel[0] = '\0';
+                            active = false;
+                            printf("\033[H\033[J");
+                        } else {
+                            send_command(cmd);
+                            break;
+                        }
+                    } else {
+                        printf("Usage: -channel <channel_name> -room <room_name>\nIf you want to exit, use the EXIT command\n");
+                    }
+                }
+            }
+            close(client_fd);
+            return 0;
+        }
+    } else {
+        printf("Usage: %s LOGIN username -p password\n", argv[0]);
+        return 1;
+    }
+    close(client_fd);
+    return 0;
+}
 
 ```
 #### Penjelasan Singkat Kode (Revisi)
