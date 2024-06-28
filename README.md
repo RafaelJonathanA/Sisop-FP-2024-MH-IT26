@@ -1347,10 +1347,12 @@ Lalu setelah itu diharapkan kita dapat melihat chat yang dilakukan oleh client s
 
 - Hasil EDIT user (ROOT) dan REMOVE 
 ![Kuasa ROOT](https://github.com/RafaelJonathanA/Sisop/assets/150375098/dbf384f0-a08c-4597-a38c-3435430315c4)
+- Hasil pada username fidel
 ![Bukti Kuasa Root](https://github.com/RafaelJonathanA/Sisop/assets/150375098/918c46c6-abd7-4ce8-ac75-81aa70796e6f)
 
 - Hasil dari BAN, UNBAN
 ![Ban dan UNBAN](https://github.com/RafaelJonathanA/Sisop/assets/150375098/1cfaa5aa-002a-45ea-bf12-ae61433c59af)
+- Hasil pada username fidel 
 ![Bukti ke ban ](https://github.com/RafaelJonathanA/Sisop/assets/150375098/6b1c378a-7538-453a-9a11-5e7780dcd562)
 
 - Hasil EDIT profile diri sendiri 
