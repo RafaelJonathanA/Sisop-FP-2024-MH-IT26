@@ -2225,50 +2225,62 @@ Pada revisi monitor.c kami sudah mengupayakan agar monnitor bisa masuk ke akun u
 
 #### Hasil revisi 
 - Hasil dari REGISTER, LOGIN, CREATE CHANNEL, JOIN, CREATE ROOM. 
+
 ![CREATE CHANNEL dan ROOM](https://github.com/RafaelJonathanA/Sisop/assets/150375098/4d6c0f7e-324f-4d23-aa61-7e119bc5ce07)
 
 - Hasil dari LIST CHANNEL, LIST USER 
+
 ![LIST CHANNEL dan ROOM](https://github.com/RafaelJonathanA/Sisop/assets/150375098/010d537f-0712-48ca-88a3-19ee2640f63f)
 
 - Hasil dari CHAT, SEE CHAT, EDIT CHAT 
+
 ![chat rafa](https://github.com/RafaelJonathanA/Sisop/assets/150375098/d3472912-2700-4369-b1c8-eea72fd55249)
 
 - Hasil dari CHAT, SEE CHAT, DEL CHAT, EDIT CHAT 
+
 ![chat fidel](https://github.com/RafaelJonathanA/Sisop/assets/150375098/723335ac-0c13-43f3-b6ff-60a990ac00c4)
 
 - Hasil EDIT CHANNEL dan DEL CHANNEL 
+
 ![EDIT CHANNEL dan DEL CHANNEL](https://github.com/RafaelJonathanA/Sisop/assets/150375098/f8671699-bd06-4887-8ad9-b5014531c738)
 
 - Hasil EDIT user (ROOT) dan REMOVE 
+
 ![Kuasa ROOT](https://github.com/RafaelJonathanA/Sisop/assets/150375098/dbf384f0-a08c-4597-a38c-3435430315c4)
 
 - Hasil pada username fidel
+
 ![Bukti Kuasa Root](https://github.com/RafaelJonathanA/Sisop/assets/150375098/918c46c6-abd7-4ce8-ac75-81aa70796e6f)
 
 - Hasil dari BAN, UNBAN
+
 ![Ban dan UNBAN](https://github.com/RafaelJonathanA/Sisop/assets/150375098/1cfaa5aa-002a-45ea-bf12-ae61433c59af)
 
 - Hasil pada username fidel 
+
 ![Bukti ke ban ](https://github.com/RafaelJonathanA/Sisop/assets/150375098/6b1c378a-7538-453a-9a11-5e7780dcd562)
 
 - Hasil EDIT profile diri sendiri 
+
 ![Bukti update diri sendiri](https://github.com/RafaelJonathanA/Sisop/assets/150375098/4e8c76f0-e920-419c-ab71-fdb6d175a949)
 
 - Hasil EXIT 
+
 ![EXIT](https://github.com/RafaelJonathanA/Sisop/assets/150375098/dba59328-194e-4980-9ef0-0fea38f29913)
 
 ##### Fungsi yang berhasil setelah revisi 
-1. JOIN CHANNEL 
-2. JOIN ROOM 
-3. CREATE ROOM 
-4. CHAT
-5. DEL ROOM 
-6. LIST USERS 
-7. LIST ROOM
-8. EDIT USERNAME 
-9. REMOVE USER 
-10. BAN USER 
-11. UNBAN USER
+1. LIST ROOM
+2. LIST USER
+3. JOIN CHANNEL
+4. JOIN ROOM
+5. CHAT
+6. CREATE ROOM ADMIN
+7. EDIT ROOM ADMIN
+8. DEL ROOM ADMIN
+9. BAN
+10. UNBAN
+11. REMOVE USER
+12. JOIN BANNED CHANNEL USER
 
 ##### Fungsi yang belum berhasil setelah revisi 
 1. Monitor 
